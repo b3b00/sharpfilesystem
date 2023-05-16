@@ -40,12 +40,20 @@ namespace SharpFileSystem.FileSystems
             var entities = GetEntities(path);
             foreach (var entity in entities)
             {
-
-                    var parents = entity.ParentPath.GetDirectorySegments();
-                    if (parents.Any() || path != FileSystemPath.DirectorySeparator.ToString())
+                var parents = entity.ParentPath.GetDirectorySegments();
+                if (parents.Any() || path != FileSystemPath.DirectorySeparator.ToString())
+                {
+                    // TODO remove path and take first
+                    var count = path.GetDirectorySegments().Length;
+                    var belowPath = parents.Skip(count);
+                    if (belowPath.Any())
                     {
-                        directories.Add(FileSystemPath.DirectorySeparator+parents.First());
+                        Console.WriteLine(
+                            $"directories of {path} : add {parents.First()} from {string.Join("/", parents)} => {belowPath.First()}");
+                        //directories.Add(FileSystemPath.DirectorySeparator + parents.First());
+                        directories.Add(FileSystemPath.DirectorySeparator + belowPath.First());
                     }
+                }
             }
 
             return directories.Distinct().ToList();

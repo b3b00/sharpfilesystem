@@ -74,7 +74,6 @@ namespace SharpFileSystem.FileSystems
             }
 
             return entities;
-            //return Assembly.GetManifestResourceNames().Select(name => FileSystemPath.Root.AppendFile(name.Replace(AssemblyName+".",""))).ToArray();
         }
 
         private string GetResourceName(FileSystemPath path)

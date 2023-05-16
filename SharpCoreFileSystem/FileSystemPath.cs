@@ -134,7 +134,7 @@ namespace SharpFileSystem
         public FileSystemPath AppendPath(FileSystemPath path)
         {
             if (!IsDirectory)
-                throw new InvalidOperationException("This FileSystemPath is not a directory.");
+                throw new InvalidOperationException($"{Path} is not a directory.");
             return new FileSystemPath(Path + path.Path.Substring(1));
         }
 

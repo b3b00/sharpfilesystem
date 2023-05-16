@@ -33,6 +33,8 @@
       <EmbeddedResource Include="resDir\deepFile.txt">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </EmbeddedResource>
+      <None Remove="resDir\deep\deepy.txt" />
+      <EmbeddedResource Include="resDir\deep\deepy.txt" />
     </ItemGroup>
 
 </Project>

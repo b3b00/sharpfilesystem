@@ -62,7 +62,7 @@ namespace SharpFileSystem.Tests.FileSystems
             Check.That(directories).IsEquivalentTo(expectedDirectories);
 
 
-            embedFS.ChRoot("/resDir");
+            embedFS.ChRoot("/resDir/");
 
             files = merge.GetFiles("/");
             expectedFiles = new List<FileSystemPath>() { "/deepFile.txt" };
@@ -71,6 +71,14 @@ namespace SharpFileSystem.Tests.FileSystems
             directories = merge.GetDirectories("/");
             expectedDirectories = new List<FileSystemPath>() { "/deep","/memory","/resDir" };
             Check.That(directories).IsEquivalentTo(expectedDirectories);
+
+            directories = merge.GetDirectories("/deep/");
+            expectedDirectories = new List<FileSystemPath>() { "/deeper"};
+            Check.That(directories).IsEquivalentTo(expectedDirectories);
+
+            files = merge.GetFiles("/deep/");
+            expectedFiles = new List<FileSystemPath>() { "/deep/deep.txt"};
+            Check.That(files).IsEquivalentTo(expectedFiles);
         }
     }
 }
