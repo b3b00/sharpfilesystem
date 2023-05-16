@@ -323,9 +323,9 @@ namespace SharpFileSystem.Tests
         [InlineData("/root/subRoot/file.txt","/root/subroot/subsubroot/",false)]
         [InlineData("/root/subRoot/","/racine/",false)]
 
-        public void testIsRooted(FileSystemPath path, FileSystemPath root, bool isRooted)
+        public void testIsRooted(string path, string root, bool isRooted)
         {
-            Assert.Equal(isRooted,path.IsRootedBy(root));
+            Assert.Equal(isRooted,((FileSystemPath)path).IsRootedBy(root));
         }
     }
 }
