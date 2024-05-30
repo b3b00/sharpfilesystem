@@ -48,7 +48,7 @@ jobs:
     - name: publish nuget
       if: matrix.os == 'windows-latest' && github.event_name == 'push' && contains(github.ref, 'refs/tags/')
       id: publish_nuget
-      uses: brandedoutcast/publish-nuget@v2.5.5
+      uses: b3b00/publish-nuget@1.1.2
       with:
           VERSION_REGEX: <version>(.*)<\/version>
           PROJECT_FILE_PATH: ${{env.MAIN_CSPROJ}}
@@ -76,9 +76,9 @@ jobs:
         asset_path: ${{ steps.publish_nuget.outputs.PACKAGE_PATH }}
         asset_name: ${{ steps.publish_nuget.outputs.PACKAGE_NAME }}
         asset_content_type: application/zip
-    - name: Invoke refresh readme badges
-      if: contains(github.ref, 'master')
-      uses: benc-uk/workflow-dispatch@v1
-      with:
-        workflow: refresh readme badges
-        token: ${{ secrets.RELEASE_PAT }}
+    # - name: Invoke refresh readme badges
+    #   if: contains(github.ref, 'master')
+    #   uses: benc-uk/workflow-dispatch@v1
+    #   with:
+    #     workflow: refresh readme badges
+    #     token: ${{ secrets.RELEASE_PAT }}
