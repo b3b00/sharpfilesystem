@@ -77,7 +77,7 @@ jobs:
         asset_name: ${{ steps.publish_nuget.outputs.PACKAGE_NAME }}
         asset_content_type: application/zip
     - name: Invoke refresh readme badges
-      if: ${{ contains(github.ref, 'master') && && matrix.os == 'ubuntu-latest' && steps.create_release.outputs.upload_url != ''  && steps.create_release.outputs.upload_url != null }}
+      if: ${{ contains(github.ref, 'master') && matrix.os == 'ubuntu-latest' && steps.create_release.outputs.upload_url != ''  && steps.create_release.outputs.upload_url != null }}
       uses: benc-uk/workflow-dispatch@v1
       with:
         workflow: refresh readme badges
