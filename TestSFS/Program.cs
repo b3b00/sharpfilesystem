@@ -18,9 +18,10 @@ namespace TestSFS
         {
             // embeddedFS();
             // CreateMemoryFile();
-            MergeEmbeddedAndMemoryFS();
+            // MergeEmbeddedAndMemoryFS();
             //PhysicalFS();
-            MergeEmbeddedAndPhysicalFS();
+            // MergeEmbeddedAndPhysicalFS();
+            chrootedPhysicalFS();
             // ReadZipFS();
             // WriteZipFS();
             // Read7ZipFS();
@@ -215,6 +216,22 @@ namespace TestSFS
             var recentities = physicalFS.GetEntitiesRecursive(FileSystemPath.Root);
 
             physicalFS.CleanFS();
+        }
+
+        static void chrootedPhysicalFS()
+        {
+            PhysicalFileSystem fileSystem;
+            var fileName = "x";
+            var root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+            System.IO.Directory.CreateDirectory(root);
+            fileSystem = new PhysicalFileSystem(root);
+            fileSystem.CreateDirectory("/root/");
+            fileSystem.ChRoot("/root");
+            fileSystem.WriteAllText("/test.root.txt","test");
+            var physicalPath = Path.Combine(fileSystem.PhysicalRoot, "root", "test.root.txt");
+            Assert.True(System.IO.File.Exists(physicalPath));
+            var content = System.IO.File.ReadAllText(physicalPath);
+            Assert.Equal("test",content);
         }
     }
 

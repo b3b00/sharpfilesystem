@@ -121,7 +121,7 @@ namespace SharpFileSystem.FileSystems
         {
             if (!path.IsDirectory)
                 throw new ArgumentException("The specified path is not a directory.", "path");
-            CreatedDirectories.Add(GetPhysicalPath(path));
+            CreatedDirectories.Add(path);
             System.IO.Directory.CreateDirectory(GetPhysicalPath(path));
         }
 
