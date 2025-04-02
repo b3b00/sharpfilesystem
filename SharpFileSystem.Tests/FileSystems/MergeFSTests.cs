@@ -17,8 +17,8 @@ namespace SharpFileSystem.Tests.FileSystems
             var memFs = new MemoryFileSystem();
             var embedFS = new EmbeddedResourceFileSystem(typeof(MergeFSTests).Assembly);
             var merge = new MergedFileSystem(memFs, embedFS);
-            merge.CreateDirectory("/memory/");
-            using (var stream = merge.CreateFile("/memory/test.txt"))
+            merge.CreateDirectory("/memory/", true);
+            using (var stream = merge.CreateFile("/memory/test.txt", true))
             {
                 using (var writer = new StreamWriter(stream))
                 {
@@ -38,8 +38,8 @@ namespace SharpFileSystem.Tests.FileSystems
             Assert.Equal(5,entities.Count);
 
 
-            merge.CreateDirectory("/resDir/");
-            using (var stream = merge.CreateFile("/resDir/memoryFileThatMatchAnEmbeddedPath.txt"))
+            merge.CreateDirectory("/resDir/",true);
+            using (var stream = merge.CreateFile("/resDir/memoryFileThatMatchAnEmbeddedPath.txt", true))
             {
                 using (var writer = new StreamWriter(stream))
                 {

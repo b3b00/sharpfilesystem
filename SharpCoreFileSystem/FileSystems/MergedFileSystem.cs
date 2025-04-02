@@ -51,6 +51,22 @@ namespace SharpFileSystem.FileSystems
 
         public IFileSystem GetFirstRW(FileSystemPath path)
         {
+            for (int i = 0; i < FileSystems.Count(); i++)
+            {
+                var fs = FileSystems.ElementAt(i);
+                if (!fs.IsReadOnly)
+                {
+                    if (path == null)
+                    {
+                        return fs;
+                    }
+
+                    if (fs.Exists(path))
+                    {
+                        return fs;
+                    }
+                }
+            }
             return FileSystems.FirstOrDefault(fs => !fs.IsReadOnly && (path == null || fs.Exists(path)));
         }
 
@@ -86,7 +102,16 @@ namespace SharpFileSystem.FileSystems
         {
             if (Exists(path))
                 throw new ArgumentException("The specified directory already exists.");
-            var fs = GetFirstRW(path.ParentPath);
+            IFileSystem fs = null;
+            if (createParents)
+            {
+                fs = GetFirstRW();
+            }
+            else
+            {
+                fs = GetFirstRW(path.ParentPath);
+            }
+
             if (fs == null)
                 throw new ArgumentException("The directory-parent does not exist.");
             fs.CreateDirectory(path, createParents);
