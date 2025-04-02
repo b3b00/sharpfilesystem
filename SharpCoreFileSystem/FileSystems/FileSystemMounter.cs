@@ -69,10 +69,10 @@ namespace SharpFileSystem.FileSystems
             return pair.Value.Exists(path.RemoveParent(pair.Key));
         }
 
-        public override Stream CreateFile(FileSystemPath path)
+        public override Stream CreateFile(FileSystemPath path, bool createParents = false)
         {
             var pair = Get(path);
-            return pair.Value.CreateFile(path.RemoveParent(pair.Key));
+            return pair.Value.CreateFile(path.RemoveParent(pair.Key), createParents);
         }
 
         public override Stream OpenFile(FileSystemPath path, FileAccess access)
@@ -81,10 +81,10 @@ namespace SharpFileSystem.FileSystems
             return pair.Value.OpenFile(path.RemoveParent(pair.Key), access);
         }
 
-        public override void CreateDirectory(FileSystemPath path)
+        public override void CreateDirectory(FileSystemPath path, bool createParents = false)
         {
             var pair = Get(path);
-            pair.Value.CreateDirectory(path.RemoveParent(pair.Key));
+            pair.Value.CreateDirectory(path.RemoveParent(pair.Key),createParents);
         }
 
         public override void Delete(FileSystemPath path)

@@ -35,12 +35,16 @@ namespace SharpFileSystem.FileSystems
             return path.IsDirectory ? _directories.ContainsKey(path) : _files.ContainsKey(path);
         }
 
-        public override Stream CreateFile(FileSystemPath path)
+        public override Stream CreateFile(FileSystemPath path, bool createParents = false)
         {
             if (!path.IsFile)
                 throw new ArgumentException("The specified path is no file.", "path");
-            if (!_directories.ContainsKey(path.ParentPath))
+            if (!createParents && !_directories.ContainsKey(path.ParentPath))
                 throw new DirectoryNotFoundException();
+            else if (createParents && !_directories.ContainsKey(path.ParentPath))
+            {
+                CreateDirectory(path.ParentPath, true);
+            }
             _directories[path.ParentPath].Add(path);
             return new MemoryFileStream(_files[path] = new MemoryFile());
         }
@@ -55,7 +59,7 @@ namespace SharpFileSystem.FileSystems
             return new MemoryFileStream(file);
         }
 
-        public override void CreateDirectory(FileSystemPath path)
+        public override void CreateDirectory(FileSystemPath path, bool createParents = false)
         {
             if (!path.IsDirectory)
                 throw new ArgumentException("The specified path is no directory.", "path");
@@ -85,6 +89,15 @@ namespace SharpFileSystem.FileSystems
 
         public override void Dispose()
         {
+        }
+
+        /// <summary>
+        /// Removes all directories and files.
+        /// </summary>
+        public override void CleanFS()
+        {
+            _directories.Clear();
+            _files.Clear();
         }
 
         public class MemoryFile
@@ -175,6 +188,8 @@ namespace SharpFileSystem.FileSystems
                 Buffer.BlockCopy(buffer, offset, Content, (int)Position, count);
                 Position += count;
             }
+
+
         }
     }
 }

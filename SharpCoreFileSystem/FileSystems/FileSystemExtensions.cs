@@ -23,7 +23,7 @@ namespace SharpFileSystem.FileSystems
 
         public static void WriteAllText(this IFileSystem fileSystem, FileSystemPath path, string content)
         {
-            using (var stream = fileSystem.Exists(path) ? fileSystem.OpenFile(path, FileAccess.Write) : fileSystem.CreateFile(path))
+            using (var stream = fileSystem.Exists(path) ? fileSystem.OpenFile(path, FileAccess.Write) : fileSystem.CreateFile(path, true))
             {
                 using (var writer = new StreamWriter(stream))
                 {

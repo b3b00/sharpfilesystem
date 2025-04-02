@@ -11,6 +11,9 @@ namespace SharpFileSystem.FileSystems
         public override bool IsReadOnly => false;
 
         #region Internals
+
+        private HashSet<FileSystemPath> CreatedDirectories = new HashSet<FileSystemPath>();
+        private HashSet<FileSystemPath> CreatedFiles = new HashSet<FileSystemPath>();
         public string PhysicalRoot { get; private set; }
 
         public PhysicalFileSystem(string physicalRoot)
@@ -69,11 +72,42 @@ namespace SharpFileSystem.FileSystems
             return path.IsFile ? System.IO.File.Exists(GetPhysicalPath(path)) : System.IO.Directory.Exists(GetPhysicalPath(path));
         }
 
-        public override Stream CreateFile(FileSystemPath path)
+        public override Stream CreateFile(FileSystemPath path, bool createParents = false)
         {
             if (!path.IsFile)
                 throw new ArgumentException("The specified path is not a file.", "path");
+            var physicalPath = GetPhysicalPath(path);
+            var parent = GetPhysicalPath(path.ParentPath);
+            if (createParents && !Path.Exists(parent))
+            {
+                CreatedDirectories.Add(path.ParentPath);
+                System.IO.Directory.CreateDirectory(parent);
+            }
+            CreatedFiles.Add(path);
             return System.IO.File.Create(GetPhysicalPath(path));
+        }
+
+        /// <summary>
+        /// Removes all created files and leaves the physical file system clean.
+        /// </summary>
+        public override void CleanFS()
+        {
+            foreach (var createdFile in CreatedFiles)
+            {
+                if (System.IO.File.Exists(GetPhysicalPath(createdFile)))
+                {
+                    System.IO.File.Delete(GetPhysicalPath(createdFile));
+                }
+            }
+
+            foreach (var createdDirectory in CreatedDirectories)
+            {
+                if (System.IO.Directory.Exists(GetPhysicalPath(createdDirectory)))
+                {
+                    System.IO.Directory.Delete(GetPhysicalPath(createdDirectory), true);
+                }
+            }
+            //TODO removes
         }
 
         public override Stream OpenFile(FileSystemPath path, FileAccess access)
@@ -83,10 +117,11 @@ namespace SharpFileSystem.FileSystems
             return System.IO.File.Open(GetPhysicalPath(path), FileMode.Open, access);
         }
 
-        public override void CreateDirectory(FileSystemPath path)
+        public override void CreateDirectory(FileSystemPath path, bool createParents = false)
         {
             if (!path.IsDirectory)
                 throw new ArgumentException("The specified path is not a directory.", "path");
+            CreatedDirectories.Add(GetPhysicalPath(path));
             System.IO.Directory.CreateDirectory(GetPhysicalPath(path));
         }
 

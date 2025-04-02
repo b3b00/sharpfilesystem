@@ -9,13 +9,22 @@ namespace SharpFileSystem.FileSystems
     {
         protected FileSystemPath Root { get; set; }
 
+
+
         public abstract ICollection<FileSystemPath> GetEntities(FileSystemPath path);
         public abstract bool Exists(FileSystemPath path);
-        public abstract Stream CreateFile(FileSystemPath path);
+        public abstract Stream CreateFile(FileSystemPath path, bool createParents = false);
         public abstract Stream OpenFile(FileSystemPath path, FileAccess access);
-        public abstract void CreateDirectory(FileSystemPath path);
+        public abstract void CreateDirectory(FileSystemPath path, bool createParents = false);
         public abstract void Delete(FileSystemPath path);
 
+        /// <summary>
+        /// clean FS. semantic of "clean" is up to the file system type. Many simply remove all created files.
+        /// </summary>
+        public virtual void CleanFS()
+        {
+
+        }
 
         public virtual void ChRoot(FileSystemPath newRoot)
         {

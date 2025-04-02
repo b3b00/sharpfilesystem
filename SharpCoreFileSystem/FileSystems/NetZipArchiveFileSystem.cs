@@ -80,7 +80,7 @@ namespace SharpFileSystem.FileSystems
                 .Any(entryPath => entryPath.IsChildOf(path) || entryPath.Equals(path));
         }
 
-        public override Stream CreateFile(FileSystemPath path)
+        public override Stream CreateFile(FileSystemPath path, bool createParents = false)
         {
             if (ZipArchive.Mode == ZipArchiveMode.Read)
                 throw new InvalidOperationException("This is a read-only filesystem.");
@@ -98,7 +98,7 @@ namespace SharpFileSystem.FileSystems
             return zae.Open();
         }
 
-        public override void CreateDirectory(FileSystemPath path)
+        public override void CreateDirectory(FileSystemPath path, bool createParents = false)
         {
             if (ZipArchive.Mode == ZipArchiveMode.Read)
                 throw new InvalidOperationException("This is a read-only filesystem.");

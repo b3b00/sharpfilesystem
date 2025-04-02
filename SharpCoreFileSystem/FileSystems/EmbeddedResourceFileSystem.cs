@@ -101,12 +101,12 @@ namespace SharpFileSystem.FileSystems
             return Assembly.GetManifestResourceStream(GetResourceName(path));
         }
 
-        public override Stream CreateFile(FileSystemPath path)
+        public override Stream CreateFile(FileSystemPath path, bool createParents = false)
         {
             throw new NotSupportedException();
         }
 
-        public override void CreateDirectory(FileSystemPath path)
+        public override void CreateDirectory(FileSystemPath path, bool createParents = false)
         {
             throw new NotSupportedException();
         }
@@ -116,6 +116,13 @@ namespace SharpFileSystem.FileSystems
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        /// does nothing
+        /// </summary>
+        public override void CleanFS()
+        {
+
+        }
 
 
         public override void Dispose()

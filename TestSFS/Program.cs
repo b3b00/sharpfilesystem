@@ -16,8 +16,11 @@ namespace TestSFS
 
         static void Main(string[] args)
         {
-            embeddedFS();
-            CreateMemoryFile();
+            // embeddedFS();
+            // CreateMemoryFile();
+            MergeEmbeddedAndMemoryFS();
+            //PhysicalFS();
+            MergeEmbeddedAndPhysicalFS();
             // ReadZipFS();
             // WriteZipFS();
             // Read7ZipFS();
@@ -66,22 +69,22 @@ namespace TestSFS
             var deepFilePath = resDir.AppendFile("deepFile.txt");
             EmbeddedResourceFileSystem eRscFS = new EmbeddedResourceFileSystem(Assembly.GetAssembly(typeof(Program)));
             Assert.True(eRscFS.Exists(filePath));
-            using (var stream = eRscFS.OpenFile(filePath,FileAccess.Read))
+            using (var stream = eRscFS.OpenFile(filePath, FileAccess.Read))
             {
                 using (var reader = new StreamReader(stream))
                 {
                     string value = reader.ReadToEnd();
-                    Assert.Equal(content,value);
+                    Assert.Equal(content, value);
                 }
             }
 
             Assert.True(eRscFS.Exists(deepFilePath));
-            using (var stream = eRscFS.OpenFile(deepFilePath,FileAccess.Read))
+            using (var stream = eRscFS.OpenFile(deepFilePath, FileAccess.Read))
             {
                 using (var reader = new StreamReader(stream))
                 {
                     string value = reader.ReadToEnd();
-                    Assert.Equal(deepContent,value);
+                    Assert.Equal(deepContent, value);
                 }
             }
 
@@ -90,74 +93,130 @@ namespace TestSFS
             ;
         }
 
-        // static void WriteZipFS()
-        // {
-        //     var dirPath = FileSystemPath.Root.AppendDirectory("dir");
-        //     var filePath = dirPath.AppendFile("file.txt");
-        //
-        //     string zipFileName = @".\newtest.zip";
-        //     if (System.IO.File.Exists(zipFileName))
-        //     {
-        //         System.IO.File.Delete(zipFileName);
-        //     }
-        //
-        //     using (var zipFileSystem =
-        //         SharpZipLibFileSystem.Open(System.IO.File.Open(zipFileName, FileMode.OpenOrCreate)))
-        //     {
-        //
-        //         using (var transaction = zipFileSystem.OpenWriteTransaction())
-        //         {
-        //             zipFileSystem.CreateDirectory(dirPath);
-        //             using (var stream = zipFileSystem.CreateFile(filePath))
-        //             {
-        //                 using (StreamWriter sw = new StreamWriter(stream))
-        //                 {
-        //                     sw.Write("hello zip");
-        //                 }
-        //             }
-        //         }
-        //         ;
-        //         // TODO : check if written sucessfully
-        //
-        //         Assert.True(zipFileSystem.Exists(filePath));
-        //         using (var xStream = zipFileSystem.OpenFile(filePath, FileAccess.Read))
-        //         {
-        //             var readContent = new byte[128];
-        //             int read = xStream.Read(readContent, 0, readContent.Length);
-        //
-        //             Assert.Equal(9, read);
-        //             string value = Encoding.ASCII.GetString(readContent, 0, read);
-        //             Assert.Equal("hello zip", value);
-        //             // Trying to read beyond end of file should return 0.
-        //             Assert.Equal(0, xStream.Read(readContent, 0, readContent.Length));
-        //         }
-        //     }
-        //
-        // }
-        //
-        // static void ReadZipFS()
-        //         {
-        //             FileSystemPath MemRootFilePath = FileSystemPath.Root.AppendFile("x");
-        //             var zipFileSystem = SharpZipLibFileSystem.Open(System.IO.File.Open(@".\test.zip",FileMode.Open));
-        //             // File shouldn’t exist prior to creation.
-        //             Assert.False(zipFileSystem.Exists(MemRootFilePath));
-        //
-        //             // File should still exist and have content.
-        //             var file = FileSystemPath.Parse("/file");
-        //             Assert.True(zipFileSystem.Exists(file));
-        //             using (var xStream = zipFileSystem.OpenFile(file,FileAccess.Read))
-        //             {
-        //                 var readContent = new byte[128];
-        //                 int read =xStream.Read(readContent, 0, readContent.Length);
-        //
-        //                 Assert.Equal(4,read);
-        //                 string value = Encoding.ASCII.GetString(readContent,0,read);
-        //                 Assert.Equal("test",value);
-        //                 // Trying to read beyond end of file should return 0.
-        //                 Assert.Equal(0, xStream.Read(readContent, 0, readContent.Length));
-        //             }
-        //         }
+        static void MergeEmbeddedAndMemoryFS()
+        {
+            string newContent = "new content";
+            string newContentPath = "/resDir/new.txt";
+            MemoryFileSystem memFS = new MemoryFileSystem();
+            memFS.ChRoot("/");
+            string content = "test embedded resource";
+            string deepContent = "deep file";
+            var filePath = FileSystemPath.Root.AppendFile("test.txt");
+            var resDir = FileSystemPath.Root.AppendDirectory("resDir");
+            var deepFilePath = resDir.AppendFile("deepFile.txt");
+
+            EmbeddedResourceFileSystem embeddedFS =
+                new EmbeddedResourceFileSystem(Assembly.GetAssembly(typeof(Program)));
+            embeddedFS.ChRoot("/");
+
+            MergedFileSystem mergedFS = new MergedFileSystem(embeddedFS, memFS);
+            mergedFS.ChRoot("/");
+
+            Assert.True(mergedFS.Exists(filePath));
+            using (var stream = mergedFS.OpenFile(filePath, FileAccess.Read))
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    string value = reader.ReadToEnd();
+                    Assert.Equal(content, value);
+                }
+            }
+
+            Assert.True(mergedFS.Exists(deepFilePath));
+            using (var stream = mergedFS.OpenFile(deepFilePath, FileAccess.Read))
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    string value = reader.ReadToEnd();
+                    Assert.Equal(deepContent, value);
+                }
+            }
+
+            mergedFS.WriteAllText(newContentPath, newContent);
+            Assert.True(mergedFS.Exists(filePath));
+            var foundContent = mergedFS.ReadAllText(newContentPath);
+            Assert.Equal(newContent, foundContent);
+
+            mergedFS.CleanFS();
+            Assert.False(mergedFS.Exists(newContentPath));
+        }
+
+         static void MergeEmbeddedAndPhysicalFS()
+        {
+            string newContent = "new content";
+            string newContentPath = "/resDir/new.txt";
+            PhysicalFileSystem physicalFS = new PhysicalFileSystem(".");
+            physicalFS.ChRoot("/");
+            string content = "test embedded resource";
+            string deepContent = "deep file";
+            var filePath = FileSystemPath.Root.AppendFile("test.txt");
+            var resDir = FileSystemPath.Root.AppendDirectory("resDir");
+            var deepFilePath = resDir.AppendFile("deepFile.txt");
+
+            EmbeddedResourceFileSystem embeddedFS =
+                new EmbeddedResourceFileSystem(Assembly.GetAssembly(typeof(Program)));
+            embeddedFS.ChRoot("/");
+
+            MergedFileSystem mergedFS = new MergedFileSystem(embeddedFS, physicalFS);
+            mergedFS.ChRoot("/");
+
+            Assert.True(mergedFS.Exists(filePath));
+            using (var stream = mergedFS.OpenFile(filePath, FileAccess.Read))
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    string value = reader.ReadToEnd();
+                    Assert.Equal(content, value);
+                }
+            }
+
+            Assert.True(mergedFS.Exists(deepFilePath));
+            using (var stream = mergedFS.OpenFile(deepFilePath, FileAccess.Read))
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    string value = reader.ReadToEnd();
+                    Assert.Equal(deepContent, value);
+                }
+            }
+
+            mergedFS.WriteAllText(newContentPath, newContent);
+            Assert.True(mergedFS.Exists(filePath));
+            var foundContent = mergedFS.ReadAllText(newContentPath);
+            Assert.Equal(newContent, foundContent);
+
+            var entities = mergedFS.GetEntities(FileSystemPath.Root);
+            foreach (var entity in entities)
+            {
+                Console.WriteLine(entity.Path);
+            }
+
+            var recentities = mergedFS.GetEntitiesRecursive(FileSystemPath.Root);
+            foreach (var entity in recentities)
+            {
+                Console.WriteLine(entity.Path);
+            }
+
+            mergedFS.CleanFS();
+            Assert.False(mergedFS.Exists(newContentPath));
+        }
 
 
+        static void PhysicalFS()
+        {
+            PhysicalFileSystem physicalFS = new PhysicalFileSystem(".");
+
+            physicalFS.WriteAllText("/dir/subDir/file.txt", "content");
+            Assert.True(physicalFS.Exists("/dir/subDir/file.txt"));
+            var foundContent = physicalFS.ReadAllText("/dir/subdir/file.txt");
+            Assert.Equal("content", foundContent);
+
+            var entities = physicalFS.GetEntities(FileSystemPath.Root);
+            var recentities = physicalFS.GetEntitiesRecursive(FileSystemPath.Root);
+
+            physicalFS.CleanFS();
+        }
     }
+
 }
+

@@ -41,12 +41,20 @@ namespace SharpFileSystem.FileSystems
             return FileSystem.OpenFile(path, access);
         }
 
-        public override Stream CreateFile(FileSystemPath path)
+        public override Stream CreateFile(FileSystemPath path, bool createParents = false)
         {
             throw new InvalidOperationException("This is a read-only filesystem.");
         }
 
-        public override void CreateDirectory(FileSystemPath path)
+        /// <summary>
+        /// does nothing
+        /// </summary>
+        public override void CleanFS()
+        {
+
+        }
+
+        public override void CreateDirectory(FileSystemPath path, bool createParents = false)
         {
             throw new InvalidOperationException("This is a read-only filesystem.");
         }

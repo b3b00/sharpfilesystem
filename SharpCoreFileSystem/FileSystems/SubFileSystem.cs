@@ -44,7 +44,7 @@ namespace SharpFileSystem.FileSystems
             return FileSystem.Exists(AppendRoot(path));
         }
 
-        public override Stream CreateFile(FileSystemPath path)
+        public override Stream CreateFile(FileSystemPath path, bool createParents = false)
         {
             return FileSystem.CreateFile(AppendRoot(path));
         }
@@ -54,7 +54,7 @@ namespace SharpFileSystem.FileSystems
             return FileSystem.OpenFile(AppendRoot(path), access);
         }
 
-        public override void CreateDirectory(FileSystemPath path)
+        public override void CreateDirectory(FileSystemPath path, bool createParents = false)
         {
             FileSystem.CreateDirectory(AppendRoot(path));
         }

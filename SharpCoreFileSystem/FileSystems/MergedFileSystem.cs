@@ -51,13 +51,27 @@ namespace SharpFileSystem.FileSystems
 
         public IFileSystem GetFirstRW(FileSystemPath path)
         {
-            return FileSystems.FirstOrDefault(fs => !fs.IsReadOnly && fs.Exists(path));
+            return FileSystems.FirstOrDefault(fs => !fs.IsReadOnly && (path == null || fs.Exists(path)));
         }
 
-        public override Stream CreateFile(FileSystemPath path)
+        public IFileSystem GetFirstRW()
         {
-            var fs = GetFirstRW(path) ?? FileSystems.First();
-            return fs.CreateFile(path);
+            return FileSystems.FirstOrDefault(fs => !fs.IsReadOnly);
+        }
+
+        public override Stream CreateFile(FileSystemPath path, bool createParents = false)
+        {
+            var fs = GetFirstRW() ?? FileSystems.First();
+            return fs.CreateFile(path, createParents);
+        }
+
+
+        public override void CleanFS()
+        {
+            foreach (var fileSystem in FileSystems)
+            {
+                fileSystem.CleanFS();
+            }
         }
 
         public override Stream OpenFile(FileSystemPath path, FileAccess access)
@@ -68,14 +82,14 @@ namespace SharpFileSystem.FileSystems
             return fs.OpenFile(path, access);
         }
 
-        public override void CreateDirectory(FileSystemPath path)
+        public override void CreateDirectory(FileSystemPath path, bool createParents = false)
         {
             if (Exists(path))
                 throw new ArgumentException("The specified directory already exists.");
             var fs = GetFirstRW(path.ParentPath);
             if (fs == null)
                 throw new ArgumentException("The directory-parent does not exist.");
-            fs.CreateDirectory(path);
+            fs.CreateDirectory(path, createParents);
         }
 
         public override void Delete(FileSystemPath path)
