@@ -13,12 +13,12 @@
     <RootNamespace>SharpFileSystem</RootNamespace>
 </PropertyGroup>
 <PropertyGroup>
-  <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+  <PackageLicenseFile>LICENSE</PackageLicenseFile>
      <PackageReadmeFile>README.md</PackageReadmeFile>
    </PropertyGroup>
    <ItemGroup>
-   <None Include="../../LICENSE.txt" Pack="true" PackagePath=""/>
-   <None Include="../../README.md" Pack="true" PackagePath=""/>
+   <None Include="../LICENSE" Pack="true" PackagePath=""/>
+   <None Include="../README.md" Pack="true" PackagePath=""/>
    </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" />
