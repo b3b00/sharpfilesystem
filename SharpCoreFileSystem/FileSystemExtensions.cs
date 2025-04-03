@@ -52,7 +52,7 @@ namespace SharpFileSystem
             {
                 currentDirectoryPath = currentDirectoryPath.AppendDirectory(dirName);
                 if (!fileSystem.Exists(currentDirectoryPath))
-                    fileSystem.CreateDirectory (currentDirectoryPath);
+                    fileSystem.CreateDirectory (currentDirectoryPath, true);
             }
         }
 
@@ -78,7 +78,7 @@ namespace SharpFileSystem
         public static void MoveTo(this File source, Directory destination)
         {
             source.FileSystem.Move(source.Path, destination.FileSystem, destination.Path.AppendFile(source.Path.EntityName));
-        } 
+        }
         #endregion
 
         #region Copy Extensions

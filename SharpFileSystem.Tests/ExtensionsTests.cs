@@ -10,7 +10,7 @@ namespace SharpFileSystem.Tests
         public void testRecursiveDirectoryCreation()
         {
             var mem = new MemoryFileSystem();
-            mem.CreateDirectoryRecursive("/memory/deep/deeper/deepest/");
+            mem.CreateDirectory("/memory/deep/deeper/deepest/",true);
             Assert.True(mem.Exists("/memory/"));
             Assert.True(mem.Exists("/memory/deep/"));
             Assert.True(mem.Exists("/memory/deep/deeper/"));

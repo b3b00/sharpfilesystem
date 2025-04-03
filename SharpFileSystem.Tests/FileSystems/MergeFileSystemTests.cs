@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,13 +10,13 @@ using Assert = Xunit.Assert;
 
 namespace SharpFileSystem.Tests.FileSystems
 {
-    public class MergeFSTests
+    public class MergeFileSystemTests
     {
         [Fact]
         public void TestMerge()
         {
             var memFs = new MemoryFileSystem();
-            var embedFS = new EmbeddedResourceFileSystem(typeof(MergeFSTests).Assembly);
+            var embedFS = new EmbeddedResourceFileSystem(typeof(MergeFileSystemTests).Assembly);
             var merge = new MergedFileSystem(memFs, embedFS);
             merge.CreateDirectory("/memory/", true);
             using (var stream = merge.CreateFile("/memory/test.txt", true))
@@ -79,6 +80,46 @@ namespace SharpFileSystem.Tests.FileSystems
             files = merge.GetFiles("/deep/");
             expectedFiles = new List<FileSystemPath>() { "/deep/deep.txt"};
             Check.That(files).IsEquivalentTo(expectedFiles);
+        }
+
+        [Fact]
+        public void TestCreateOver()
+        {
+            var memFs = new MemoryFileSystem();
+            var embedFS = new EmbeddedResourceFileSystem(typeof(MergeFileSystemTests).Assembly);
+            var merge = new MergedFileSystem(memFs, embedFS);
+            Assert.True(merge.Exists("/resDir/deep/deep.txt"));
+            var exception = Assert.Throws<ArgumentException>(() =>
+            {
+                using (var stream = merge.CreateFile("/resDir/deep/deep.txt", true))
+                {
+                    using (var writer = new StreamWriter(stream))
+                    {
+                        writer.Write("create over");
+                    }
+                }
+            });
+            Assert.Contains("file already exists.", exception.Message);
+        }
+
+        [Fact]
+        public void TestWriteOver()
+        {
+            var memFs = new MemoryFileSystem();
+            var embedFS = new EmbeddedResourceFileSystem(typeof(MergeFileSystemTests).Assembly);
+            var merge = new MergedFileSystem(memFs, embedFS);
+            Assert.True(merge.Exists("/resDir/deep/deep.txt"));
+
+            using (var stream = merge.OpenFile("/resDir/deep/deep.txt", FileAccess.Write))
+            {
+                using (var writer = new StreamWriter(stream))
+                {
+                    writer.Write("write over");
+                }
+            }
+
+            Assert.Equal("write over", merge.ReadAllText("/resDir/deep/deep.txt"));
+
         }
     }
 }

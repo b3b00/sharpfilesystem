@@ -12,7 +12,7 @@ namespace SharpFileSystem.Tests.FileSystems
         public void TestMount()
         {
             var memFs = new MemoryFileSystem();
-            var embedFS = new EmbeddedResourceFileSystem(typeof(MergeFSTests).Assembly);
+            var embedFS = new EmbeddedResourceFileSystem(typeof(MergeFileSystemTests).Assembly);
 
             var mounter = new FileSystemMounter(new MountPoint("/memory/",memFs), new MountPoint("/embed/",embedFS));
             mounter = new FileSystemMounter(("/memory/",memFs), ("/embed/",embedFS));
