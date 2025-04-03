@@ -12,7 +12,7 @@ namespace SharpFileSystem.Tests.FileSystems
         {
             var memFs = new MemoryFileSystem();
             memFs.CreateDirectory("/mem/");
-            using (var stream = memFs.CreateFile("/mem/test.txt"))
+            using (var stream = memFs.CreateFile("/mem/test.txt",true))
             {
                 using (var writer = new StreamWriter(stream))
                 {
