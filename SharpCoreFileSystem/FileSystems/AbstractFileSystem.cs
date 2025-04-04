@@ -57,9 +57,6 @@ namespace SharpFileSystem.FileSystems
                     var belowPath = parents.Skip(count);
                     if (belowPath.Any())
                     {
-                        Console.WriteLine(
-                            $"directories of {path} : add {parents.First()} from {string.Join("/", parents)} => {belowPath.First()}");
-                        //directories.Add(FileSystemPath.DirectorySeparator + parents.First());
                         directories.Add(FileSystemPath.DirectorySeparator + belowPath.First());
                     }
                 }

@@ -98,7 +98,6 @@ namespace SharpFileSystem.Tests.FileSystems
         {
             for (var i = 0; i < 10; i++)
             {
-                Console.WriteLine($"i={i}");
                 using (var stream = FileSystem.CreateFile(RootFilePath))
                 {
                 }
