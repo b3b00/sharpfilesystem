@@ -67,6 +67,29 @@ namespace SharpFileSystem.FileSystems
 
         public abstract bool IsReadOnly { get; }
 
+        private FileSystemPath _currentDirectory = "";
+        public FileSystemPath CurrentDirectory => _currentDirectory.IsEmpty ? Root : _currentDirectory;
+        public void ChDir(FileSystemPath currentDirectory)
+        {
+            if (currentDirectory.IsRelative)
+            {
+                _currentDirectory = CurrentDirectory.AppendDirectory(currentDirectory);
+            }
+            else
+            {
+                _currentDirectory = currentDirectory;
+            }
+        }
+
+        protected FileSystemPath GetAbsolutePath(FileSystemPath path)
+        {
+            if (path.IsRelative)
+            {
+                return CurrentDirectory.AppendPath(path);
+            }
+            return path;
+        }
+
         public abstract void Dispose();
     }
 }

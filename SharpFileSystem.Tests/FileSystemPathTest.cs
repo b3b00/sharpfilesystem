@@ -152,7 +152,8 @@ namespace SharpFileSystem.Tests
         {
             Assert.True(_paths.All(p => p == FileSystemPath.Parse(p.ToString())));
             EAssert.Throws<ArgumentNullException>(() => FileSystemPath.Parse(null));
-            EAssert.Throws<ParseException>(() => FileSystemPath.Parse("thisisnotapath"));
+            var relative = FileSystemPath.Parse("realtive/path");
+            Assert.True(relative.IsRelative);
             EAssert.Throws<ParseException>(() => FileSystemPath.Parse("/thisisainvalid//path"));
         }
 

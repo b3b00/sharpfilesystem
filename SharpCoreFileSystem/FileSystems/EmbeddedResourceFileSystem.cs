@@ -30,6 +30,7 @@ namespace SharpFileSystem.FileSystems
 
         public override ICollection<FileSystemPath> GetEntities(FileSystemPath path)
         {
+            path = GetAbsolutePath(path);
             var entities = new List<FileSystemPath>();
             var resources = Assembly.GetManifestResourceNames();
 
@@ -53,7 +54,7 @@ namespace SharpFileSystem.FileSystems
                 }
 
 
-                var rootedRoot = path.IsRoot ? Root : Root.AppendPath(path);
+                var rootedRoot = GetAbsolutePath(path);
                 if (!rootedRoot.Path.EndsWith(FileSystemPath.DirectorySeparator.ToString()))
                 {
                     rootedRoot += FileSystemPath.DirectorySeparator;
@@ -78,6 +79,7 @@ namespace SharpFileSystem.FileSystems
 
         private string GetResourceName(FileSystemPath path)
         {
+            path = GetAbsolutePath(path);
             var root = Root.IsRoot ? "" : Root.PathWithoutLeadingSlash.Replace(FileSystemPath.DirectorySeparator.ToString(), ".") ?? "";
             if (!string.IsNullOrEmpty(root) && !root.EndsWith("."))
             {
@@ -88,8 +90,10 @@ namespace SharpFileSystem.FileSystems
 
         public override bool Exists(FileSystemPath path)
         {
+            path = GetAbsolutePath(path);
             var resourceName = GetResourceName(path);
-            return path.IsRoot || !path.IsDirectory && Assembly.GetManifestResourceNames().Contains(GetResourceName(path));
+            var resources = Assembly.GetManifestResourceNames();
+            return path.IsRoot || !path.IsDirectory && resources.Contains(resourceName);
         }
 
         public override Stream OpenFile(FileSystemPath path, FileAccess access)
@@ -98,7 +102,7 @@ namespace SharpFileSystem.FileSystems
                 throw new NotSupportedException();
             // if (path.IsDirectory || path.ParentPath != FileSystemPath.Root)
             //     throw new FileNotFoundException();
-            return Assembly.GetManifestResourceStream(GetResourceName(path));
+            return Assembly.GetManifestResourceStream(GetResourceName(GetAbsolutePath(path)));
         }
 
         public override Stream CreateFile(FileSystemPath path, bool createParents = false)

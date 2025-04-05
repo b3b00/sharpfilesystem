@@ -27,5 +27,10 @@ public interface IFileSystem: IDisposable
     void CleanFS();
 
     bool IsReadOnly { get; }
+
+    FileSystemPath CurrentDirectory { get;  }
+
+    void ChDir(FileSystemPath currentDirectory);
+
 }
 }

@@ -8,10 +8,20 @@ namespace SharpFileSystem
 {
     public struct FileSystemPath: IEquatable<FileSystemPath>, IComparable<FileSystemPath>
     {
+
+
         public static readonly char DirectorySeparator = '/';
         public static FileSystemPath Root { get; private set; }
 
+        private bool _isEmpty;
+
+        public bool IsEmpty => _isEmpty;
+
+        private readonly bool _isRelative;
+
         private readonly string _path;
+
+        public bool IsRelative => _isRelative;
 
         public string Path
         {
@@ -86,6 +96,13 @@ namespace SharpFileSystem
         private FileSystemPath(string path)
         {
             _path = path;
+            _isRelative = false;
+            _isEmpty = string.IsNullOrEmpty(path);
+        }
+
+        private FileSystemPath(string path, bool isRelative) : this(path)
+        {
+            _isRelative = isRelative;
         }
 
         public static implicit operator FileSystemPath(string path) {
@@ -114,10 +131,14 @@ namespace SharpFileSystem
         {
             if (s == null)
                 throw new ArgumentNullException("path");
-            if (!IsRooted(s))
-                throw new ParseException(s, "Path is not rooted");
+            bool isRelative = !IsRooted(s);
             if (s.Contains(string.Concat(DirectorySeparator, DirectorySeparator)))
                 throw new ParseException(s, "Path contains double directory-separators.");
+            if (isRelative)
+            {
+                return new FileSystemPath(s, true);
+            }
+
             return new FileSystemPath(s);
         }
 
@@ -135,7 +156,7 @@ namespace SharpFileSystem
         {
             if (!IsDirectory)
                 throw new InvalidOperationException($"{Path} is not a directory.");
-            return new FileSystemPath(Path + path.Path.Substring(1));
+            return new FileSystemPath(Path + (path.IsRelative ? path.Path : path.Path.Substring(1)));
         }
 
         [Pure]
