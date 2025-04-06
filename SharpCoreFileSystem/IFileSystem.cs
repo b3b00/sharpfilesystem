@@ -32,5 +32,6 @@ public interface IFileSystem: IDisposable
 
     void ChDir(FileSystemPath currentDirectory);
 
+    FileSystemPath GetAbsolutePath(FileSystemPath path);
 }
 }

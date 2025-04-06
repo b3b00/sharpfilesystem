@@ -6,6 +6,7 @@ namespace SharpFileSystem.FileSystems
     {
         public static string ReadAllText(this IFileSystem fileSystem, FileSystemPath path)
         {
+            path = fileSystem.GetAbsolutePath(path);
             string content = "";
             if (fileSystem.Exists(path))
             {
@@ -23,6 +24,7 @@ namespace SharpFileSystem.FileSystems
 
         public static void WriteAllText(this IFileSystem fileSystem, FileSystemPath path, string content)
         {
+            path = fileSystem.GetAbsolutePath(path);
             using (var stream = fileSystem.Exists(path) ? fileSystem.OpenFile(path, FileAccess.Write) : fileSystem.CreateFile(path, true))
             {
                 using (var writer = new StreamWriter(stream))

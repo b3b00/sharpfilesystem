@@ -32,6 +32,7 @@ namespace SharpFileSystem
 
         public static IEnumerable<FileSystemPath> GetEntitiesRecursive(this IFileSystem fileSystem, FileSystemPath path)
         {
+            path = fileSystem.GetAbsolutePath(path);
             if (!path.IsDirectory)
                 throw new ArgumentException("The specified path is not a directory.");
             foreach (var entity in fileSystem.GetEntities(path))
@@ -62,7 +63,7 @@ namespace SharpFileSystem
             IEntityMover mover;
             if (!EntityMovers.Registration.TryGetSupported(sourceFileSystem.GetType(), destinationFileSystem.GetType(), out mover))
                 throw new ArgumentException("The specified combination of file-systems is not supported.");
-            mover.Move(sourceFileSystem, sourcePath, destinationFileSystem, destinationPath);
+            mover.Move(sourceFileSystem, sourceFileSystem.GetAbsolutePath(sourcePath), destinationFileSystem, destinationFileSystem.GetAbsolutePath(destinationPath));
         }
 
         public static void MoveTo(this FileSystemEntity entity, IFileSystem destinationFileSystem, FileSystemPath destinationPath)

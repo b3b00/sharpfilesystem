@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using NFluent;
 using SharpFileSystem.FileSystems;
@@ -43,6 +44,13 @@ namespace SharpFileSystem.Tests.FileSystems
             Check.That(fileSystem.Exists("sub.txt")).IsFalse();
             fileSystem.ChDir("/");
             Check.That(fileSystem.Exists("root.txt"));
+            fileSystem.WriteAllText("root.txt","root");
+            var content = fileSystem.ReadAllText("root.txt");
+            Check.That(content).IsEqualTo("root");
+            var subEntities = fileSystem.GetEntitiesRecursive("sub/").ToList();
+            Check.That(subEntities).CountIs(3);
+            // TODO : make return relative paths if current dir is set
+            Check.That(subEntities.Extracting(x => x.ToString())).IsEquivalentTo("/sub/sub.txt", "/sub/sub/", "/sub/sub/subsub.txt");
 
 
         }

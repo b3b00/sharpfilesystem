@@ -81,7 +81,7 @@ namespace SharpFileSystem.FileSystems
             }
         }
 
-        protected FileSystemPath GetAbsolutePath(FileSystemPath path)
+        public FileSystemPath GetAbsolutePath(FileSystemPath path)
         {
             if (path.IsRelative)
             {
