@@ -69,11 +69,13 @@ namespace SharpFileSystem.FileSystems
 
         public override  bool Exists(FileSystemPath path)
         {
+            path = GetAbsolutePath(path);
             return path.IsFile ? System.IO.File.Exists(GetPhysicalPath(path)) : System.IO.Directory.Exists(GetPhysicalPath(path));
         }
 
         public override Stream CreateFile(FileSystemPath path, bool createParents = false)
         {
+            path = GetAbsolutePath(path);
             if (!path.IsFile)
                 throw new ArgumentException("The specified path is not a file.", "path");
             var physicalPath = GetPhysicalPath(path);
@@ -127,19 +129,24 @@ namespace SharpFileSystem.FileSystems
 
         public override void Delete(FileSystemPath path)
         {
+            path = GetAbsolutePath(path);
             if (path.IsFile)
+            {
                 System.IO.File.Delete(GetPhysicalPath(path));
+            }
             else
                 System.IO.Directory.Delete(GetPhysicalPath(path), true);
         }
 
         public new ICollection<FileSystemPath> GetDirectories(FileSystemPath path)
         {
+            path = GetAbsolutePath(path);
             return System.IO.Directory.GetDirectories(path).Select(x => (FileSystemPath)x).ToList();
         }
 
         public new ICollection<FileSystemPath> GetFiles(FileSystemPath path)
         {
+            path = GetAbsolutePath(path);
             return System.IO.Directory.GetFiles(path).Select(x => (FileSystemPath)x).ToList();
         }
 
