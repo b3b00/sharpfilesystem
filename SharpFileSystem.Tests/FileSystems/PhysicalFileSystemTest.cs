@@ -17,11 +17,7 @@ namespace SharpFileSystem.Tests.FileSystems
         string FileName { get; }
         FileSystemPath FileNamePath { get; }
 
-//        public PhysicalFileSystemTest()
-//        {
-//            FileName = "x";
-//            FileNamePath = FileSystemPath.Root.AppendFile(FileName);
-//        }
+
 
         public PhysicalFileSystemTest()
         {

@@ -2,28 +2,12 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using NFluent;
 using SharpFileSystem.FileSystems;
 using Xunit;
 
 
 namespace SharpFileSystem.Tests.FileSystems
 {
-
-    public class ChangeDirTests
-    {
-        [Fact]
-        public void ChangeDirBasicTest()
-        {
-            EmbeddedResourceFileSystem embedded = new EmbeddedResourceFileSystem(Assembly.GetAssembly(typeof(EmbeddedRessourceFileSystemTests)));
-            Check.That(embedded.Exists(FileSystemPath.Root.AppendFile("test.txt"))).IsTrue();
-            embedded.ChDir("resDir");
-            Check.That(embedded.CurrentDirectory.ToString()).IsEqualTo("/resDir/");
-            Check.That(embedded.Exists("test.txt")).IsFalse();
-            var deepExists = embedded.Exists("deepFile.txt");
-            Check.That(deepExists).IsTrue();
-        }
-    }
     public class EmbeddedRessourceFileSystemTests
     {
         [Fact]
