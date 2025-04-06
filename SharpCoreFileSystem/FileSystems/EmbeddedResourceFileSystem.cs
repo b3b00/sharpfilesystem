@@ -54,7 +54,8 @@ namespace SharpFileSystem.FileSystems
                 }
 
 
-                var rootedRoot = GetAbsolutePath(path);
+                //var rootedRoot = GetAbsolutePath(path);
+                var rootedRoot = path.IsRoot ? Root : Root.AppendPath(path);
                 if (!rootedRoot.Path.EndsWith(FileSystemPath.DirectorySeparator.ToString()))
                 {
                     rootedRoot += FileSystemPath.DirectorySeparator;
@@ -70,6 +71,7 @@ namespace SharpFileSystem.FileSystems
                 }
                 else if (Root.IsRoot)
                 {
+                    // pas de chroot
                     entities.Add(entityPath);
                 }
             }
