@@ -78,7 +78,7 @@ namespace SharpFileSystem.FileSystems
                 throw new ArgumentException("The specified path is not a file.", "path");
             var physicalPath = GetPhysicalPath(path);
             var parent = GetPhysicalPath(path.ParentPath);
-            if (createParents && !Path.Exists(parent))
+            if (createParents && !System.IO.Directory.Exists(parent))
             {
                 CreatedDirectories.Add(path.ParentPath);
                 System.IO.Directory.CreateDirectory(parent);
