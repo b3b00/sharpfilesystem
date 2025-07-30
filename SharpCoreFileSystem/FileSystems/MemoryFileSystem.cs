@@ -44,8 +44,9 @@ namespace SharpFileSystem.FileSystems
             else if (createParents && !_directories.ContainsKey(path.ParentPath))
             {
                 CreateDirectory(path.ParentPath, true);
+                _directories[path.ParentPath].Add(path);
             }
-            _directories[path.ParentPath].Add(path);
+
             return new MemoryFileStream(_files[path] = new MemoryFile());
         }
 
@@ -66,10 +67,22 @@ namespace SharpFileSystem.FileSystems
             ISet<FileSystemPath> subentities;
             if (_directories.ContainsKey(path))
                 throw new ArgumentException("The specified directory-path already exists.", "path");
-            if (!_directories.TryGetValue(path.ParentPath, out subentities))
+            if (!_directories.TryGetValue(path.ParentPath, out subentities) && !createParents)
                 throw new DirectoryNotFoundException();
-            subentities.Add(path);
-            _directories[path] = new HashSet<FileSystemPath>();
+            else if (!_directories.TryGetValue(path.ParentPath, out subentities) && createParents)
+            {
+                CreateDirectory(path.ParentPath, createParents);
+                var subs = new HashSet<FileSystemPath>();
+                _directories[path] = subs;
+                subs.Add(path);
+            }
+            else if (_directories.TryGetValue(path.ParentPath, out subentities) && createParents)
+            {
+                subentities.Add(path);
+                _directories[path] = new HashSet<FileSystemPath>();
+            }
+
+
         }
 
         public override void Delete(FileSystemPath path)

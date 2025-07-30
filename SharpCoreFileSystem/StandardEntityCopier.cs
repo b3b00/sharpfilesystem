@@ -22,7 +22,7 @@ namespace SharpFileSystem
             {
                 using (var sourceStream = source.OpenFile(sourcePath, FileAccess.Read))
                 {
-                    using (var destinationStream = destination.CreateFile(destinationPath))
+                    using (var destinationStream = destination.CreateFile(destinationPath, true))
                     {
                         byte[] buffer = new byte[BufferSize];
                         int readBytes;

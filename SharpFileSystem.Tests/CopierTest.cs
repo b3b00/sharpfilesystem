@@ -13,13 +13,13 @@ namespace SharpFileSystem.Tests
             var memFs2 = new MemoryFileSystem();
 
             memFs1.CreateDirectory("/fs1/");
-            memFs1.CreateDirectory("/fs1/memory/");
+            memFs1.CreateDirectory("/fs1/memory/",true);
 
             memFs1.WriteAllText("/fs1/memory/test1.txt", "hello1");
             memFs1.WriteAllText("/fs1/memory/test2.txt", "hello2");
 
 
-            memFs2.CreateDirectory("/fs2/");
+            memFs2.CreateDirectory("/fs2/", true);
             //memFs2.CreateDirectory("/fs2/memory/");
             var copier = new StandardEntityCopier();
             copier.Copy(memFs1, "/fs1/memory/", memFs2, "/fs2/memory/");
@@ -31,9 +31,6 @@ namespace SharpFileSystem.Tests
             Assert.Equal("hello1",content1);
             var content2 = memFs2.ReadAllText("/fs2/memory/test2.txt");
             Assert.Equal("hello2",content2);
-
-
-
         }
     }
 }
