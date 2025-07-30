@@ -27,7 +27,7 @@ jobs:
       if: env.RUN_TESTS
       with:
         testProject: ${{env.TESTS_PROJECT}}
-        output: 'lcov.net7.0.info'
+        output: 'lcov.net8.0.info'
         outputFormat: 'lcov'
         threshold: 25
         excludes: '[TestSFS]*,[SharpFileSystem.Tests]*,[SharFileSystem.SevenZip]*'
