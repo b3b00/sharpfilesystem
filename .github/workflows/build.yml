@@ -16,18 +16,18 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: 8.0.x
     - name: Clean artifacts and nugets
       run: dotnet clean --configuration Release && dotnet nuget locals all --clear
     - name: Build with dotnet
       run: dotnet build --configuration Release
     - name: Test with dotnet
-      uses: b3b00/coverlet-action@1.2.2
+      uses: b3b00/coverlet-action@1.3.5-alpha1
       id: 'coverlet'
       if: env.RUN_TESTS
       with:
         testProject: ${{env.TESTS_PROJECT}}
-        output: 'lcov.info'
+        output: 'lcov.net8.0.info'
         outputFormat: 'lcov'
         threshold: 25
         excludes: '[TestSFS]*,[SharpFileSystem.Tests]*,[SharFileSystem.SevenZip]*'
@@ -48,12 +48,13 @@ jobs:
     - name: publish nuget
       if: matrix.os == 'windows-latest'
       id: publish_nuget
-      uses: b3b00/publish-nuget@1.1.5
+      uses: alirezanet/publish-nuget@v3.0.0
       with:
           VERSION_REGEX: <version>(.*)<\/version>
           PROJECT_FILE_PATH: ${{env.MAIN_CSPROJ}}
           NUGET_KEY: ${{secrets.NUGET_KEY}}
           VERSION_FILE_PATH: ${{env.MAIN_CSPROJ}}
+          INCLUDE_SYMBOLS: true
     - name: Create Release
       if: ${{ success() && matrix.os == 'ubuntu-latest' && steps.publish_nuget.outputs.VERSION != ''  && steps.publish_nuget.outputs.VERSION != null }}
       id: create_release
