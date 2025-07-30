@@ -48,12 +48,13 @@ jobs:
     - name: publish nuget
       if: matrix.os == 'windows-latest'
       id: publish_nuget
-      uses: b3b00/publish-nuget@1.1.2
+      uses: alirezanet/publish-nuget@v3.0.0
       with:
           VERSION_REGEX: <version>(.*)<\/version>
           PROJECT_FILE_PATH: ${{env.MAIN_CSPROJ}}
           NUGET_KEY: ${{secrets.NUGET_KEY}}
           VERSION_FILE_PATH: ${{env.MAIN_CSPROJ}}
+          INCLUDE_SYMBOLS: true
     - name: Create Release
       if: ${{ success() && matrix.os == 'ubuntu-latest' && steps.publish_nuget.outputs.VERSION != ''  && steps.publish_nuget.outputs.VERSION != null }}
       id: create_release
